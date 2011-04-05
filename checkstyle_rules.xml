@@ -31,6 +31,7 @@
       <property name="allowUndeclaredRTE" value="true"/>
       <property name="allowThrowsTagsForSubclasses" value="true"/>
       <property name="allowMissingPropertyJavadoc" value="true"/>
+      <property name="allowMissingThrowsTags" value="true"/>
     </module>
     <module name="JavadocVariable"/>
     <module name="JavadocStyle">
