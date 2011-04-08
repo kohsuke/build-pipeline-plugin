@@ -38,9 +38,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.xml.sax.SAXException;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
@@ -63,6 +61,16 @@ public class BuildPipelineTriggerTest extends HudsonTestCase {
         super.setUp();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidConstructor() {
+        try {
+            BuildPipelineTrigger bp = new BuildPipelineTrigger(null);
+            fail("An IllegalArgumentException should have been thrown.");
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
     @Test
     public void testBuildPipelineTrigger() throws IOException {
         String proj1 = "Proj1";
@@ -81,43 +89,6 @@ public class BuildPipelineTriggerTest extends HudsonTestCase {
     }
 
     @Test
-    public void testProjectConfigurePage() throws IOException, SAXException, ElementNotFoundException {
-        String proj1 = "Proj1";
-        String proj2 = "Proj2";
-        String proj2Href = ".." + "/job/" + proj2;
-
-        // Create two new projects
-        final HtmlPage testDownstreamProjectConfigurePage = createNewFreeStyleProjectHtmlPage(proj1);
-        final HtmlPage testUpstreamProjectConfigurePage = createNewFreeStyleProjectHtmlPage(proj2);
-
-        // Test if the HTML pages were successfully returned
-        assertNotNull("Create New Upstream Job Form Return Page failed", testUpstreamProjectConfigurePage);
-        assertNotNull("Create New Upstream Job Form Return Page failed", testDownstreamProjectConfigurePage);
-
-        // Save the configuration of the Downstream project
-        final HtmlForm configureNewDownstreamJobForm = testDownstreamProjectConfigurePage.getFormByName("config");
-        final HtmlButton saveNewDownstreamJobButton = (HtmlButton) last(configureNewDownstreamJobForm.getHtmlElementsByTagName("button"));
-        saveNewDownstreamJobButton.removeAttribute("disabled");
-        configureNewDownstreamJobForm.submit(saveNewDownstreamJobButton);
-
-        // Select the Build-Pipeline-Plugin radio button
-        final HtmlForm configureNewUpstreamJobForm = testUpstreamProjectConfigurePage.getFormByName("config");
-        final HtmlCheckBoxInput BuildPipelinePluginCheckBox = testUpstreamProjectConfigurePage.getElementByName(BUILD_PIPELINE_PLUGIN_NAME);
-        BuildPipelinePluginCheckBox.setChecked(true);
-        BuildPipelinePluginCheckBox.click();
-
-        // Set the Downstream Project Name
-        final HtmlButton saveNewUpstreamJobButton = (HtmlButton) last(configureNewUpstreamJobForm.getHtmlElementsByTagName("button"));
-        saveNewUpstreamJobButton.removeAttribute("disabled");
-
-        // Retrieve the configuration page for the Upstream project and test that the correct downstream project has been added
-        final HtmlPage testUpstreamProjectFinalPage = new WebClient().goTo(proj2Href);
-        assertEquals("The downstream project should have been " + proj2Href, proj2Href,
-                testUpstreamProjectFinalPage.getAnchorByHref(proj2Href).getHrefAttribute());
-
-    }
-
-    @Test
     public void testOnDownstreamProjectRenamed() throws IOException {
         String proj1 = "Proj1";
         String proj2 = "Proj2";
@@ -126,7 +97,7 @@ public class BuildPipelineTriggerTest extends HudsonTestCase {
         bpTrigger.setDownstreamProjectNames(proj2 + ", " + proj3);
         assertTrue(bpTrigger.onDownstreamProjectRenamed(proj2, proj2 + "NEW"));
 
-        assertEquals(proj2 + "NEW, " + proj3, bpTrigger.getDownstreamProjectNames());
+        assertEquals(proj2 + "NEW," + proj3, bpTrigger.getDownstreamProjectNames());
     }
 
     @Test

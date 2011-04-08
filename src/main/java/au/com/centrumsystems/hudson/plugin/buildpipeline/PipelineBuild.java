@@ -281,7 +281,7 @@ public class PipelineBuild {
      * @return - Upstream PipelineBuild object from the current PipelineBuild object
      */
     public PipelineBuild getUpstreamPipelineBuild() {
-        final List<AbstractProject> upstreamProjects = this.project.getUpstreamProjects();
+        final List<AbstractProject> upstreamProjects = getProject().getUpstreamProjects();
         final AbstractProject<?, ?> previousProject;
         final PipelineBuild previousPB = new PipelineBuild();
         if (upstreamProjects.size() > 0) {
