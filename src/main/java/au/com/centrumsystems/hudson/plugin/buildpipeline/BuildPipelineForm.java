@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  * @author Centrum Systems
@@ -13,7 +14,8 @@ import java.util.Map.Entry;
  * 
  */
 public class BuildPipelineForm {
-
+	private static final Logger LOGGER = Logger.getLogger(BuildPipelineForm.class.getName());
+	
 	/**
 	 * projects laid out in a grid using maps to ease accessing (or maybe I made it way too complicated by not using a 2-dimensional array)
 	 * Outside map holds rows and inner map has ProjectForm at a particular position (defined with key)
@@ -23,7 +25,7 @@ public class BuildPipelineForm {
 	 * a list of maps of map represents build pipelines laid out in grids, similar to projectGrid, but we have many of these grids
 	 */
 	private final List<Map<Integer, Map<Integer, BuildForm>>> buildGrids;
-
+	
 	/**
 	 * 
 	 * @param projectForm
@@ -113,13 +115,9 @@ public class BuildPipelineForm {
 
 	/**
 	 * Determines the next row of the grid that should be populated
-	 * 
-	 * @param grid
-	 *            - The grid of objects to be analysed
-	 * @param currentRow
-	 *            - The current row of the grid being used
-	 * @param currentColumn
-	 *            - The current column of the grid being used
+     * @param grid - The grid of objects to be analysed
+     * @param currentRow - The current row of the grid being used
+     * @param currentColumn - The current column of the grid being used
 	 * @return - The row number to be used
 	 */
 	private int getNextAvailableRow(Map<Integer, ? extends Map<Integer, ?>> grid, int currentRow, int currentColumn) {
@@ -145,14 +143,12 @@ public class BuildPipelineForm {
 	}
 
 	/**
-	 * Tests if the row of the grid already contains entries in the columns greater than the entered column.
-	 * 
-	 * @param rowOfGrid
-	 *            - The row of the grid
-	 * @param col
-	 *            - The current column of the grid
-	 * @return - true: The row does contain data in the columns greater than col, false: The row does not contain data in the columns
-	 *         greater than col
+     * Tests if the row of the grid already contains entries in the columns greater than 
+     * the entered column.
+     * @param rowOfGrid - The row of the grid
+     * @param col - The current column of the grid 
+     * @return - true: The row does contain data in the columns greater than col,
+     *          false: The row does not contain data in the columns greater than col
 	 */
 	private boolean rowAlreadyContainsData(Map<Integer, ?> rowOfGrid, int col) {
 		if (rowOfGrid != null) {
@@ -196,17 +192,19 @@ public class BuildPipelineForm {
 	}
 
 	/**
-	 * Gets a display value to determine whether a manual jobs 'trigger' button will be shown. This is used along with
-	 * isTriggerOnlyLatestJob property allow only the latest version of a job to run.
+     * Gets a display value to determine whether a manual jobs 'trigger' button 
+     * will be shown.  This is used along with isTriggerOnlyLatestJob property 
+     * allow only the latest version of a job to run.  
 	 * 
-	 * Works by: Initially always defaulted to true. If isTriggerOnlyLatestJob is set to true then as the html code is rendered the first
-	 * job which should show the trigger button will render and then a call will be made to 'setDisplayTrigger' to change the value to both
-	 * so all future jobs will not display the trigger. see main.jelly
+     * Works by:
+     * Initially always defaulted to true.
+     * If isTriggerOnlyLatestJob is set to true then as the html code is rendered the first
+     * job which should show the trigger button will render and then a call will be made
+     * to 'setDisplayTrigger' to change the value to both so all future jobs will 
+     * not display the trigger.  see main.jelly
 	 * 
-	 * @param row
-	 *            the row of the job
-	 * @param height
-	 *            the height of the job
+     * @param row the row of the job
+     * @param height the height of the job
 	 * @return boolean whether to display or not
 	 */
 	public Boolean getDisplayTrigger(int row, int height) {
@@ -214,19 +212,20 @@ public class BuildPipelineForm {
 	}
 
 	/**
-	 * Sets a display value to determine whether a manual jobs 'trigger' button will be shown. This is used along with
-	 * isTriggerOnlyLatestJob property allow only the latest version of a job to run.
+     * Sets a display value to determine whether a manual jobs 'trigger' button 
+     * will be shown.  This is used along with isTriggerOnlyLatestJob property 
+     * allow only the latest version of a job to run.  
 	 * 
-	 * Works by: Initially always defaulted to true. If isTriggerOnlyLatestJob is set to true then as the html code is rendered the first
-	 * job which should show the trigger button will render and then a call will be made to 'setDisplayTrigger' to change the value to both
-	 * so all future jobs will not display the trigger. see main.jelly
-	 * 
-	 * @param row
-	 *            the row of the job
-	 * @param height
-	 *            the height of the job
-	 * @param display
-	 *            - boolean to indicate whether the trigger button should be shown
+     * Works by:
+     * Initially always defaulted to true.
+     * If isTriggerOnlyLatestJob is set to true then as the html code is rendered the first
+     * job which should show the trigger button will render and then a call will be made
+     * to 'setDisplayTrigger' to change the value to both so all future jobs will 
+     * not display the trigger.  see main.jelly
+
+     * @param row the row of the job
+     * @param height the height of the job
+     * @param display - boolean to indicate whether the trigger button should be shown
 	 */
 	public void setDisplayTrigger(int row, int height, boolean display) {
 		projectGrid.get(row).get(height).setDisplayTrigger(display);

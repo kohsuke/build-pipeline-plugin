@@ -197,6 +197,38 @@
 			<table id="pipelines">
 				<j:set var="projectGrid" value="${buildPipelineForm.getProjectGrid()}" />
 				<!-- projects -->
+				<j:if test="${from.showPipelineDefinitionHeader}">
+					<!-- projects -->
+					<tbody>
+						<j:forEach items="${projectGrid}" var="projectGridLine">
+							<tr id="project-pipeline">
+								<j:if test="${from.isShowPipelineParameters()}">
+									<!-- additional spacer for params box -->
+									<td class="spacer"/>
+								</j:if>
+								<td class="spacer"/>
+								<j:forEach items="${projectGridLine.getValue()}" var="projectForm">
+									<td/> <!-- spacer -->
+									<td>
+										<table class="PROJECT build-card rounded">
+											<tbody>
+												<tr class="header">
+													<td colspan="2">${projectForm.getValue().getName()}</td>
+												</tr>
+												<tr class="build-body">
+													<td class="build-number">${projectForm.getValue().getLastSuccessfulBuildNumber()}</td>
+													<td class="statusImages">
+														<img src="${rootURL}/images/32x32/${projectForm.getValue().getHealth()}" class="icon-with-caption" />
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</td>
+								</j:forEach>
+							</tr>
+						</j:forEach>
+					</tbody>
+				</j:if>
 				<!-- builds -->
 				<j:forEach items="${buildPipelineForm.getBuildGrids()}" var="buildGrid" indexVar="i">
 					<tbody class="pipelineGroup">

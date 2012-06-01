@@ -20,10 +20,12 @@ import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import au.com.centrumsystems.hudson.plugin.buildpipeline.Strings;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 
 /**
- * This class provides the entry point to use this plugin in the dashboard-plugin
+ * This class provides the entry point to use this plugin in the
+ * dashboard-plugin
  * 
  * @author Ingo Richter (irichter@adobe.com)
  * @since 03/30/2012
@@ -46,15 +48,11 @@ public class BuildPipelineDashboard extends DashboardPortlet {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param name
-	 *            the name of this view
-	 * @param description
-	 *            a brief description of this view
-	 * @param selectedJob
-	 *            the job to start the build-pipeline with
-	 * @param noOfDisplayedBuilds
-	 *            how many builds will be displayed for this job
+     * @param name  the name of this view
+     * @param description   a brief description of this view
+     * @param selectedJob   the job to start the build-pipeline with
+     * @param noOfDisplayedBuilds   how many builds will be displayed for this
+     * job
 	 */
 	@DataBoundConstructor
 	public BuildPipelineDashboard(String name, String description, String selectedJob, String noOfDisplayedBuilds) {
@@ -101,7 +99,7 @@ public class BuildPipelineDashboard extends DashboardPortlet {
 
 		@Override
 		public String getDisplayName() {
-			return Messages.Portlet_BuildPipelineDashboardDescriptor();
+            return Strings.getString("Portlet.BuildPipelineDashboardDescriptor");
 		}
 
 		/**

@@ -66,6 +66,7 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.Strings;
  */
 @SuppressWarnings("unchecked")
 public class BuildPipelineTrigger extends Notifier implements DependecyDeclarer {
+	private static final Logger LOGGER = Logger.getLogger(BuildPipelineTrigger.class.getName());
 
 	/** downstream project name */
 	private String downstreamProjectNames;
@@ -154,6 +155,7 @@ public class BuildPipelineTrigger extends Notifier implements DependecyDeclarer 
 	 * @return - true: A downstream project has been renamed; false No downstream projects were renamed
 	 */
 	public boolean onDownstreamProjectRenamed(final String oldName, final String newName) {
+		LOGGER.fine(String.format("Renaming project %s -> %s", oldName, newName)); //$NON-NLS-1$
 		boolean changed = false;
 		String[] existingDownstreamProjects = new String[5];
 		if (this.getDownstreamProjectNames() != null) {
@@ -189,6 +191,7 @@ public class BuildPipelineTrigger extends Notifier implements DependecyDeclarer 
 	 * @return - true; project deleted: false; project not deleted {@link #onDownstreamProjectRenamed(String, String)}
 	 */
 	public boolean onDownstreamProjectDeleted(final String oldName) {
+		LOGGER.fine("Downstram project deleted: " + oldName); //$NON-NLS-1$
 		return onDownstreamProjectRenamed(oldName, null);
 	}
 
@@ -220,7 +223,7 @@ public class BuildPipelineTrigger extends Notifier implements DependecyDeclarer 
 					ownerProject.save();
 				} catch (final IOException e) {
 					Logger.getLogger(BuildPipelineTrigger.class.getName()).log(
-							Level.WARNING,
+							Level.SEVERE,
 							au.com.centrumsystems.hudson.plugin.buildpipeline.Strings
 									.getString("BuildPipelineTrigger.FailedPersistDuringRemoval") + downstreamProjectName, e); //$NON-NLS-1$
 				}
@@ -250,7 +253,7 @@ public class BuildPipelineTrigger extends Notifier implements DependecyDeclarer 
 		 */
 		@Override
 		public String getDisplayName() {
-			return au.com.centrumsystems.hudson.plugin.buildpipeline.Strings.getString("BuildPipelineTrigger.DisplayText"); //$NON-NLS-1$
+			return Strings.getString("BuildPipelineTrigger.DisplayText"); //$NON-NLS-1$
 		}
 
 		/**
@@ -313,7 +316,7 @@ public class BuildPipelineTrigger extends Notifier implements DependecyDeclarer 
 							try {
 								p.save();
 							} catch (final IOException e) {
-								Logger.getLogger(ItemListenerImpl.class.getName()).log(Level.WARNING,
+								Logger.getLogger(ItemListenerImpl.class.getName()).log(Level.SEVERE,
 										String.format(Strings.getString("BuildPipelineTrigger.FailedPersistDuringRename_FMT"), //$NON-NLS-1$
 												oldName, newName), e);
 							}
