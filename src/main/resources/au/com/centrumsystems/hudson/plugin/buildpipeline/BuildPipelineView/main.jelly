@@ -78,11 +78,13 @@
 					{{/unless}}
 					{{#unless build.isPending}}
 						{{#unless build.isBuilding}}
-							{{#if ${from.alwaysAllowManualTrigger}}}
-								<a href="#{{id}}" class="trigger" onclick="buildPipeline.showSpinner({{id}}); buildPipeline.rerunSuccessfulBuild({{id}}, '{{build.extId}}', [{{build.dependencyIds}}])">
-									<img title="trigger" alt="trigger" src="{{rootUrl}}/images/16x16/redo.png" />
-								</a>
-							{{/if}}
+							{{#unless build.isReadyToBeManuallyBuilt}}
+								{{#if ${from.alwaysAllowManualTrigger}}}
+									<a href="#{{id}}" class="trigger" onclick="buildPipeline.showSpinner({{id}}); buildPipeline.rerunSuccessfulBuild({{id}}, '{{build.extId}}', [{{build.dependencyIds}}])">
+										<img title="trigger" alt="trigger" src="{{rootUrl}}/images/16x16/redo.png" />
+									</a>
+								{{/if}}
+							{{/unless}}
 						{{/unless}}
 					{{/unless}}
 					{{#if build.isReadyToBeManuallyBuilt}}
@@ -109,11 +111,11 @@
 	</script>
 	<style>
 
-.trigger {
-	background: url("${rootURL}/images/16x16/clock.png") no-repeat center
-		center !important;
-}
-</style>
+	.trigger {
+		background: url("${rootURL}/images/16x16/clock.png") no-repeat center
+			center !important;
+	}
+	</style>
 	<form method="post" name="pipelineViewForm" action="manualExecution" id="manualExecutionForm">
 		<input name="upstreamProjectName" id="upstreamProjectName" type="hidden" />
 		<input name="upstreamBuildNumber" id="upstreamBuildNumber" type="hidden" />
@@ -196,69 +198,11 @@
 		
 			<table id="pipelines">
 				<j:set var="projectGrid" value="${buildPipelineForm.getProjectGrid()}" />
-				<!-- projects -->
-				<j:if test="${from.showPipelineDefinitionHeader}">
-					<!-- projects -->
-					<tbody>
-						<j:forEach items="${projectGrid}" var="projectGridLine">
-							<tr id="project-pipeline">
-								<j:if test="${from.isShowPipelineParameters()}">
-									<!-- additional spacer for params box -->
-									<td class="spacer"/>
-								</j:if>
-								<td class="spacer"/>
-								<j:forEach items="${projectGridLine.getValue()}" var="projectForm">
-									<td/> <!-- spacer -->
-									<td>
-										<table class="PROJECT build-card rounded">
-											<tbody>
-												<tr class="header">
-													<td colspan="2">${projectForm.getValue().getName()}</td>
-												</tr>
-												<tr class="build-body">
-													<td class="build-number">${projectForm.getValue().getLastSuccessfulBuildNumber()}</td>
-													<td class="statusImages">
-														<img src="${rootURL}/images/32x32/${projectForm.getValue().getHealth()}" class="icon-with-caption" />
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</td>
-								</j:forEach>
-							</tr>
-						</j:forEach>
-					</tbody>
-				</j:if>
 				<!-- builds -->
 				<j:forEach items="${buildPipelineForm.getBuildGrids()}" var="buildGrid" indexVar="i">
 					<tbody class="pipelineGroup">
 						<j:forEach begin="${0}" end="${buildGrid.keySet().size() - 1}" indexVar="x">
 							<tr class='build-pipeline'>
-								<j:if test="${from.isShowPipelineParameters()}">
-									<j:choose>
-										<j:when test="${x == 0}">
-											<td>
-												<div class="param-info"> 
-												<table>
-													<tr>
-														<td colspan="3">Parameter Values</td>
-													</tr>
-													<j:forEach items="${buildGrid.get(x).get(0).getParameters().entrySet()}" var="buildParam" indexVar="buildParamCtr">
-														<tr>
-															<td>${buildParam.getKey()}</td>
-															<td>:</td>
-															<td>${buildParam.getValue()}</td>
-														</tr>
-													</j:forEach>												
-												</table>
-												</div>
-											</td>
-										</j:when>
-										<j:otherwise>
-											<td></td>
-										</j:otherwise>
-									</j:choose>
-								</j:if>
 								<td><j:if test="${x == 0}">
 									<div class="revision rounded">
 										<div>
@@ -272,6 +216,20 @@
 													${buildGrid.get(x).get(0).getRevision()}
 												</j:otherwise>
 											</j:choose>
+											<j:if test="${from.isShowPipelineParameters()}">
+												<table>
+													<tr>
+														<td colspan="3">Parameter Values</td>
+													</tr>
+													<j:forEach items="${buildGrid.get(x).get(0).getParameters().entrySet()}" var="buildParam" indexVar="buildParamCtr">
+														<tr>
+															<td>${buildParam.getKey()}</td>
+															<td>:</td>
+															<td>${buildParam.getValue()}</td>
+														</tr>
+													</j:forEach>												
+												</table>
+											</j:if>
 										</div>
 									</div>
 								</j:if></td>
@@ -293,17 +251,17 @@
 												buildPipeline.showProgress(${build.getId()}, ${build.getDependencyIds()});
 											</j:if>
 											<j:if test="${build.getStatus() == 'PENDING'}">
-											jQuery("#pipelines").bind("show-status-${build.getId()}", function(){
-											<j:choose>
-												<j:when test="${build.isManualTrigger()}">
-													buildPipeline.updateBuildCard(${build.getId()});
-												</j:when>
-												<j:otherwise>
-													buildPipeline.updateNextBuildAndShowProgress(${build.getId()}, ${build.getNextBuildNumber()}, ${build.getDependencyIds()});
-												</j:otherwise>
-											</j:choose>
-											});
-										</j:if>
+												jQuery("#pipelines").bind("show-status-${build.getId()}", function(){
+												<j:choose>
+													<j:when test="${build.isManualTrigger()}">
+														buildPipeline.updateBuildCard(${build.getId()});
+													</j:when>
+													<j:otherwise>
+														buildPipeline.updateNextBuildAndShowProgress(${build.getId()}, ${build.getNextBuildNumber()}, ${build.getDependencyIds()});
+													</j:otherwise>
+												</j:choose>
+												});
+											</j:if>
 										</script>
 										<j:if test="${(y + 1 != buildPipelineForm.getGridWidth())}">
 											<td class="next"><j:if test="${!(build.getDependencies().length() == 0)}">
